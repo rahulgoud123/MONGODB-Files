@@ -1,0 +1,114 @@
+//Create a db
+>use databasename
+
+//create collections
+>db.createCollections()
+
+//delete db
+>db.dropDatabase()
+
+//Insert Documents:
+db.users.insertOne({name:"John",age:28,status:"active"})
+db.users.insertMany([
+    {name:"John",age:25,status:"active"}
+    {name:"Alice:,age:30,status:"inactive}
+    {name:"Bob",age:22,status:"active"}
+])
+
+//adding info in the form of array
+db.users.insertMany([{username:"john_doe",tags:["developer","mongodb","javascript"],age:25},{username:"harry_doe",tags:["Trainee","developer"],age:25}])
+
+//To get the data use find method
+db.users.find()
+
+//finding age
+db.users.find({age:25})
+
+//finding age with comparison operators
+db.users.find({age:{$gte:21}})
+
+//sort data in ascending order
+db.users.find().sort({name:1})
+
+//sort data in descending order
+db.users.find().sort({age:-1})
+
+//limit the data
+db.users.find().limit(3)
+
+//updating data
+db.users.updateOne({name:"John"},{$set:{status:"inactive"}})
+db.users.updateMany({age:{$gte:30}},{$set:{status:"senior"}})
+db.users.updateOne({name:"Alice"},{$inc:{age:2}})
+db.users.updateOne({username:"john_doe"},{$push:{tags:"fullstack"}})
+
+//deleting the data
+db.users.deleteOne({name:"John"})
+db.users.deleteMany({status:"inactive"})
+
+//Logical operators
+db.users.find({
+    $and:[
+        {age:{$gte:20}},
+        {age:{$lte:30}}
+    ]
+})
+
+db.users.find({
+    $or:[
+        {age:{$lt:20}},
+        {age:{$gt:30}}
+    ]
+})
+
+db.users.find({
+    $nor:[
+        {age:{$gte:20}},
+        {age:{$lte:30}}
+    ]
+})
+
+db.users.find({
+    age:{
+        $not:{$gte:20,$lte:30}
+    }
+})
+
+//Mongodb Aggregation:
+Aggregation is used for summing up the records by performing filteration, grouping and data transformation.
+
+db.sales.insertMany([
+    {year:2023,product:"Widget",quantity:100,price:10},
+    {year:2023,product:"Gadget",quantity:50,price:20},
+    {year:2023,product:"Widget",quantity:75,price:12},
+    {year:2023,product:"Gadget",quantity:30,price:18},
+    {year:2023,product:"Widget",quantity:120,price:11}
+])
+
+//Insert sample customer data into the "customers" collections
+db.customers.insertMany([
+    {customerId:1, name:"John Doe", country:"USA"},
+    {customerId:2, name:"Alice Smith", country:"Canada"},
+    {customerId:3, name:"Bob Jones", country:"UK"}
+])
+
+//1. Match method
+db.sales.aggregate([
+    {$match:{year:2023}}
+]) 
+
+//2. Group method
+db.sales.aggregate([
+    {$match:{year:2023}},
+    {$group:{
+        _id:"$product",
+        total_quantity:{$sum:"$quantity"},
+        averagePrice:{$avg:"$price"},
+        {$sort:{total_quantity:-1}},
+        {$limit:2}
+    }
+])
+
+//Sorting:
+{$sort:{total_quantity:-1}}
+{$limit:2}
